@@ -1,0 +1,32 @@
+name: Build and deploy astro page
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  pages: write    # to deploy to Pages
+  id-token: write # to verify the deployment originates from an appropriate source
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.13.0'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+      - name: Upload artifact in order for GitHub Pages
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'out/'
+
+      - name: Deploy to GitHub pages
+        uses: actions/deploy-pages@v2
